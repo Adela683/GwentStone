@@ -8,6 +8,16 @@ public class Goliath extends Minion {
 	}
 
 	@Override
+	public boolean isAllowedFront() {
+		return true;
+	}
+
+	@Override
+	public boolean isAllowedBack() {
+		return false;
+	}
+
+	@Override
 	public void specialAbility() {
 
 	}

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 public abstract class Minion extends Card {
 	private int attackDamage;
 	private boolean isFrozen;
-	private ObjectMapper objectMapper = new ObjectMapper();
 
 	public Minion(int mana, int health, String description, ArrayList<String> colors, String name, boolean hasAttacked, int attackDamage) {
 		super(mana, health, description, colors, name, hasAttacked);
@@ -23,14 +22,17 @@ public abstract class Minion extends Card {
 		this.isFrozen = false;
 	}
 
+	public abstract boolean isAllowedFront();
+	public abstract boolean isAllowedBack();
+
 	public ObjectNode getMinionAsObjectNode() {
-		ObjectNode minionObjectNode = objectMapper.createObjectNode();
+		ObjectNode minionObjectNode = getMapper().createObjectNode();
 		minionObjectNode.put("mana", getMana());
 		minionObjectNode.put("attackDamage", getAttackDamage());
 		minionObjectNode.put("health", getHealth());
 		minionObjectNode.put("description", getDescription());
 
-		ArrayNode colorsNode = objectMapper.createArrayNode();
+		ArrayNode colorsNode = getMapper().createArrayNode();
 		for (String color : getColors()) {
 			colorsNode.add(color);
 		}

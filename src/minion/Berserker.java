@@ -8,6 +8,16 @@ public class Berserker extends Minion{
 	}
 
 	@Override
+	public boolean isAllowedFront() {
+		return false;
+	}
+
+	@Override
+	public boolean isAllowedBack() {
+		return true;
+	}
+
+	@Override
 	public void specialAbility() {
 
 	}
