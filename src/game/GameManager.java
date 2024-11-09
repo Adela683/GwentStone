@@ -4,11 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.ActionsInput;
+import fileio.CardInput;
 import fileio.GameInput;
 import fileio.StartGameInput;
 import hero.HeroFactory;
 import lombok.Getter;
 import minion.Minion;
+import minion.MinionFactory;
 import player.Player;
 
 import java.util.ArrayList;
@@ -35,34 +37,8 @@ public class GameManager {
 			StartGameInput startInput = game.getStartGame();
 			ArrayList<ActionsInput> gameActions = game.getActions();
 
-			// TODO MAKE COPY FOR PLAYERS CURRENT DECK, SO CHANGES LAST ONLY ONE ROUND
-			player1.setHero(HeroFactory.createHeroFromCardInput(startInput.getPlayerOneHero(), startInput.getPlayerOneHero().getName()));
-			player2.setHero(HeroFactory.createHeroFromCardInput(startInput.getPlayerTwoHero(), startInput.getPlayerTwoHero().getName()));
-
-			Stack<Minion> player1Packet = new Stack<>();
-			Stack<Minion> player2Packet = new Stack<>();
-
-			// TODO MAKE COPY OF THE DECK.GET(startInput.getPlayerOneDeckIdx()), so it works on multiple games
-			Random random = new Random(startInput.getShuffleSeed());
-			Collections.shuffle(player1.getDeck().get(startInput.getPlayerOneDeckIdx()), random);
-
-			random = new Random(startInput.getShuffleSeed());
-			Collections.shuffle(player2.getDeck().get(startInput.getPlayerTwoDeckIdx()), random);
-
-			for (int i = player1.getCardsInDeck() - 1; i >= 0; i--) {
-				player1Packet.push(player1.getDeck().get(startInput.getPlayerOneDeckIdx()).get(i));
-			}
-
-			for (int i = player2.getCardsInDeck() - 1; i >= 0; i--) {
-				player2Packet.push(player2.getDeck().get(startInput.getPlayerTwoDeckIdx()).get(i));
-			}
-
-			// TODO FULLY INITIATE PLAYERS
-			player1.setCurrentDeckIndex(startInput.getPlayerOneDeckIdx());
-			player2.setCurrentDeckIndex(startInput.getPlayerTwoDeckIdx());
-
-			player1.setCurrentCardPacket(player1Packet);
-			player2.setCurrentCardPacket(player2Packet);
+			initPlayer(player1, startInput.getShuffleSeed(), startInput.getPlayerOneDeckIdx(), startInput.getPlayerOneHero());
+			initPlayer(player2, startInput.getShuffleSeed(), startInput.getPlayerTwoDeckIdx(), startInput.getPlayerTwoHero());
 
 			// Start a new game
 			Game currentGame = new Game(player1, player2, startInput.getStartingPlayer());
@@ -74,5 +50,37 @@ public class GameManager {
 				output.add(node);
 			}
 		}
+	}
+
+	/**
+	 * Prepares a player to play a game.
+	 *
+	 * @param player to prepare for game
+	 */
+	private void initPlayer(Player player, long shuffleSeed, int currentDeckIndex, CardInput hero) {
+		player.setFrontRow(new Minion[5]);
+		player.setBackRow(new Minion[5]);
+		player.setCardsInHand(new ArrayList<>());
+		player.setDone(false);
+		player.setMana(0);
+		player.setCurrentDeckIndex(currentDeckIndex);
+
+		Stack<Minion> playerPacket = new Stack<>();
+		Random random = new Random(shuffleSeed);
+
+		// make a deep copy of the current deck, so we can keep the original
+		ArrayList<Minion> deckPacketCopy = new ArrayList<>();
+		for (Minion minion : player.getDeck().get(currentDeckIndex)) {
+			Minion newMinion = minion.copy();
+			deckPacketCopy.add(newMinion);
+		}
+
+		Collections.shuffle(deckPacketCopy, random);
+		for (int i = player1.getCardsInDeck() - 1; i >= 0; i--) {
+			playerPacket.push(deckPacketCopy.get(i));
+		}
+
+		player.setCurrentCardPacket(playerPacket);
+		player.setHero(HeroFactory.createHeroFromCardInput(hero, hero.getName()));
 	}
 }

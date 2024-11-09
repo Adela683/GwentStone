@@ -1,4 +1,21 @@
 [ {
+  "command" : "getCardAtPosition",
+  "x" : 1,
+  "y" : 0,
+  "output" : {
+    "mana" : 1,
+    "attackDamage" : 6,
+    "health" : 4,
+    "description" : "Premium card: Ravished by the winds of hell, no soul is to be forgiven.",
+    "colors" : [ "Orange", "Red", "Black" ],
+    "name" : "The Ripper"
+  }
+}, {
+  "command" : "getCardAtPosition",
+  "x" : 3,
+  "y" : 0,
+  "output" : "No card available at that position."
+}, {
   "command" : "getPlayerTurn",
   "output" : 1
 }, {

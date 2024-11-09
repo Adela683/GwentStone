@@ -7,6 +7,16 @@ public class CursedOne extends Minion{
 		super(mana, health, description, colors, name, hasAttacked, attackDamage);
 	}
 
+	private CursedOne(CursedOne minion) {
+		super(minion.getMana(), minion.getHealth(), minion.getDescription(), minion.getColors(),
+				minion.getName(), minion.isHasAttacked(), minion.getAttackDamage());
+	}
+
+	@Override
+	public Minion copy() {
+		return new CursedOne(this);
+	}
+
 	@Override
 	public boolean isAllowedFront() {
 		return false;
@@ -16,6 +26,7 @@ public class CursedOne extends Minion{
 	public boolean isAllowedBack() {
 		return true;
 	}
+
 
 	@Override
 	public void specialAbility() {

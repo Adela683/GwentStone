@@ -13,4 +13,11 @@ public class Constants {
 	public static final String GET_CARDS_IN_HAND = "getCardsInHand";
 	public static final String GET_PLAYER_MANA = "getPlayerMana";
 	public static final String GET_CARDS_ON_TABLE = "getCardsOnTable";
+	public static final String CARD_USES_ATTACK = "cardUsesAttack";
+	public static final String CARD_ON_SAME_SIDE_ERROR = "Attacked card does not belong to the enemy.";
+	public static final String CARD_HAS_ATTACKED_ERROR = "Attacker card has already attacked this turn.";
+	public static final String CARD_IS_FROZEN = "Attacker card is frozen.";
+	public static final String ENEMY_HAS_TANK = "Attacked card is not of type 'Tank'.";
+	public static final String GET_CARD_AT_POSITION = "getCardAtPosition";
+	public static final String NO_CARD_AT_POSITION = "No card available at that position.";
 }

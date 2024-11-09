@@ -7,6 +7,16 @@ public class Warden extends Minion {
 		super(mana, health, description, colors, name, hasAttacked, attackDamage);
 	}
 
+	private Warden(Warden minion) {
+		super(minion.getMana(), minion.getHealth(), minion.getDescription(), minion.getColors(),
+				minion.getName(), minion.isHasAttacked(), minion.getAttackDamage());
+	}
+
+	@Override
+	public Minion copy() {
+		return new Warden(this);
+	}
+
 	@Override
 	public boolean isAllowedFront() {
 		return true;
@@ -15,6 +25,11 @@ public class Warden extends Minion {
 	@Override
 	public boolean isAllowedBack() {
 		return false;
+	}
+
+	@Override
+	public boolean isTank() {
+		return true;
 	}
 
 	@Override

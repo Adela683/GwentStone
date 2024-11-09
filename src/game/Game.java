@@ -64,6 +64,9 @@ public class Game {
 			case Constants.GET_CARDS_ON_TABLE:
 				gameOutput.add(getCardsOnTable());
 				return;
+			case Constants.GET_CARD_AT_POSITION:
+				gameOutput.add(getCardAtPosition(actionsInput));
+				return;
 		}
 
 		// Check if a normal game command was given
@@ -74,6 +77,12 @@ public class Game {
 					if (!result.isEmpty()) {
 						gameOutput.add(result);
 					}
+				}
+				return;
+			case Constants.CARD_USES_ATTACK:
+				ObjectNode result = setUpMinionAttack(actionsInput);
+				if (!result.isEmpty()) {
+					gameOutput.add(setUpMinionAttack(actionsInput));
 				}
 				return;
 		}
@@ -99,15 +108,24 @@ public class Game {
 		isRoundStart = false;
 	}
 
+	private ObjectNode getCardAtPosition(ActionsInput actionsInput) {
+		if (currentPlayer == 1) {
+			return player1.getMinionOnRow(actionsInput.getX(), actionsInput.getY());
+		}
+		return player2.getMinionOnRow(actionsInput.getX(), actionsInput.getY());
+	}
+
 	/**
 	 * End the current's player turn
 	 */
 	private void endPlayerTurn() {
 		if (currentPlayer == 1) {
 			player1.setDone(true);
+			player1.resetMinionStats();
 			currentPlayer = 2;
 		} else {
 			player2.setDone(true);
+			player2.resetMinionStats();
 			currentPlayer = 1;
 		}
 
@@ -172,6 +190,24 @@ public class Game {
 
 		result.set("output", combinedCards);
 		return  result;
+	}
+
+	private ObjectNode setUpMinionAttack(ActionsInput actionsInput) {
+		Player attackerPlayer;
+		Player attackedPlayer;
+		if (currentPlayer == 1) {
+			attackerPlayer = player1;
+			attackedPlayer = player2;
+		} else {
+			attackerPlayer = player2;
+			attackedPlayer = player1;
+		}
+
+		int x_attacker = actionsInput.getCardAttacker().getX();
+		int y_attacker = actionsInput.getCardAttacker().getY();
+		int x_attacked = actionsInput.getCardAttacked().getX();
+		int y_attacked = actionsInput.getCardAttacked().getY();
+		return GameCommands.attackMinion(attackerPlayer, attackedPlayer, x_attacker, y_attacker, x_attacked, y_attacked);
 	}
 
 	private ObjectNode getPlayerHero(ActionsInput actionsInput) {

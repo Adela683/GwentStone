@@ -7,6 +7,16 @@ public class Miraj extends Minion{
 		super(mana, health, description, colors, name, hasAttacked, attackDamage);
 	}
 
+	private Miraj(Miraj minion) {
+		super(minion.getMana(), minion.getHealth(), minion.getDescription(), minion.getColors(),
+				minion.getName(), minion.isHasAttacked(), minion.getAttackDamage());
+	}
+
+	@Override
+	public Minion copy() {
+		return new Miraj(this);
+	}
+
 	@Override
 	public boolean isAllowedFront() {
 		return true;

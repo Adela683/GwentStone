@@ -25,6 +25,12 @@ public abstract class Minion extends Card {
 	public abstract boolean isAllowedFront();
 	public abstract boolean isAllowedBack();
 
+	public boolean isTank() {
+		return false;
+	}
+
+	public abstract Minion copy();
+
 	public ObjectNode getMinionAsObjectNode() {
 		ObjectNode minionObjectNode = getMapper().createObjectNode();
 		minionObjectNode.put("mana", getMana());

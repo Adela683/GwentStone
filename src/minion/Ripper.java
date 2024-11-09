@@ -7,6 +7,16 @@ public class Ripper extends Minion {
 		super(mana, health, description, colors, name, hasAttacked, attackDamage);
 	}
 
+	private Ripper(Ripper minion) {
+		super(minion.getMana(), minion.getHealth(), minion.getDescription(), minion.getColors(),
+				minion.getName(), minion.isHasAttacked(), minion.getAttackDamage());
+	}
+
+	@Override
+	public Minion copy() {
+		return new Ripper(this);
+	}
+
 	@Override
 	public boolean isAllowedFront() {
 		return true;
