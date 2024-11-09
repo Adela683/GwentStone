@@ -26,9 +26,4 @@ public class Sentinel extends Minion{
 	public boolean isAllowedBack() {
 		return true;
 	}
-
-	@Override
-	public void specialAbility() {
-
-	}
 }

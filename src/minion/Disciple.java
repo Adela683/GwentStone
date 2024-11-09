@@ -27,8 +27,12 @@ public class Disciple extends Minion {
 		return true;
 	}
 
+	/**
+	 * God's Plan ability adds two health points to an allied minion
+	 * @param target minion
+	 */
 	@Override
-	public void specialAbility() {
-
+	public void specialAbilityMinion(Minion target) {
+		target.setHealth(target.getHealth() + 2);
 	}
 }

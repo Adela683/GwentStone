@@ -58,8 +58,6 @@ public class GameManager {
 	 * @param player to prepare for game
 	 */
 	private void initPlayer(Player player, long shuffleSeed, int currentDeckIndex, CardInput hero) {
-		player.setFrontRow(new Minion[5]);
-		player.setBackRow(new Minion[5]);
 		player.setCardsInHand(new ArrayList<>());
 		player.setDone(false);
 		player.setMana(0);

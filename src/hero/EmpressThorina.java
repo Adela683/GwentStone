@@ -1,5 +1,7 @@
 package hero;
 
+import minion.Minion;
+
 import java.util.ArrayList;
 
 public class EmpressThorina extends Hero {
@@ -8,7 +10,7 @@ public class EmpressThorina extends Hero {
 	}
 
 	@Override
-	public void specialAbility() {
+	public void specialAbilityHero(Minion[] targetRow) {
 
 	}
 }

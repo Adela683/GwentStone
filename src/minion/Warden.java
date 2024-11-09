@@ -31,9 +31,4 @@ public class Warden extends Minion {
 	public boolean isTank() {
 		return true;
 	}
-
-	@Override
-	public void specialAbility() {
-
-	}
 }

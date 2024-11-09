@@ -27,8 +27,12 @@ public class Ripper extends Minion {
 		return false;
 	}
 
+	/**
+	 * Weak Knees ability removes two attack points from target. Attack is capped at 0.
+	 * @param minion target
+	 */
 	@Override
-	public void specialAbility() {
-
+	public void specialAbilityMinion(Minion minion) {
+		minion.setAttackDamage(Math.max(minion.getAttackDamage() - 2, 0));
 	}
 }

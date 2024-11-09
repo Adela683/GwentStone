@@ -27,8 +27,14 @@ public class Miraj extends Minion{
 		return false;
 	}
 
+	/**
+	 * Skyjack ability swaps health with target
+	 * @param minion target
+	 */
 	@Override
-	public void specialAbility() {
-
+	public void specialAbilityMinion(Minion minion) {
+		int tmp = getHealth();
+		setHealth(minion.getHealth());
+		minion.setHealth(tmp);
 	}
 }

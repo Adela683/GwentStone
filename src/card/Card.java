@@ -3,6 +3,7 @@ package card;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
+import minion.Minion;
 
 import java.util.ArrayList;
 
@@ -26,5 +27,11 @@ public abstract class Card {
 		this.hasAttacked = hasAttacked;
 	}
 
-	public abstract void specialAbility();
+	public void specialAbilityMinion(Minion target) {
+
+	}
+
+	public void specialAbilityHero(Minion[] targetRow) {
+
+	}
 }

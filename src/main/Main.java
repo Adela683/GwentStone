@@ -116,8 +116,8 @@ public final class Main {
             playerTwoDecks.add(cards);
         }
 
-        Player player1 = new Player(playerOneDecks, inputData.getPlayerOneDecks().getNrCardsInDeck(), inputData.getPlayerOneDecks().getNrCardsInDeck());
-        Player player2 = new Player(playerTwoDecks, inputData.getPlayerTwoDecks().getNrCardsInDeck(), inputData.getPlayerTwoDecks().getNrCardsInDeck());
+        Player player1 = new Player(playerOneDecks, inputData.getPlayerOneDecks().getNrCardsInDeck(), inputData.getPlayerOneDecks().getNrCardsInDeck(), 1);
+        Player player2 = new Player(playerTwoDecks, inputData.getPlayerTwoDecks().getNrCardsInDeck(), inputData.getPlayerTwoDecks().getNrCardsInDeck(), 2);
 
         GameManager gameManager = new GameManager(player1, player2, inputData.getGames(), output);
         gameManager.play();

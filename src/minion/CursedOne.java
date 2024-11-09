@@ -28,8 +28,14 @@ public class CursedOne extends Minion{
 	}
 
 
+	/**
+	 * Shapeshift ability swaps health and attack damage
+	 * @param target minion
+	 */
 	@Override
-	public void specialAbility() {
-
+	public void specialAbilityMinion(Minion target) {
+		int tmp = target.getAttackDamage();
+		target.setAttackDamage(target.getHealth());
+		target.setHealth(tmp);
 	}
 }

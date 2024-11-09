@@ -1,5 +1,7 @@
 package hero;
 
+import minion.Minion;
+
 import java.util.ArrayList;
 
 public class GeneralKocioraw extends Hero {
@@ -9,7 +11,7 @@ public class GeneralKocioraw extends Hero {
 	}
 
 	@Override
-	public void specialAbility() {
+	public void specialAbilityHero(Minion[] targetRow) {
 
 	}
 }

@@ -17,9 +17,8 @@ public class Game {
 	@Getter
 	private ArrayNode gameOutput;
 	private final ObjectMapper mapper = new ObjectMapper();
-	private int playerOneMovesCurrentRound = 0;
-	private int playerTwoMovesCurrentRound = 0;
 	private boolean isRoundStart;
+	private GameTable gameTable;
 
 	public Game(Player player1, Player player2, int currentPlayer) {
 		this.player1 = player1;
@@ -27,6 +26,7 @@ public class Game {
 		this.currentPlayer = currentPlayer;
 		isRoundStart = true;
 		gameOutput = mapper.createArrayNode();
+		gameTable = new GameTable();
 	}
 
 	public void executeCommand(ActionsInput actionsInput) {
@@ -34,12 +34,7 @@ public class Game {
 			prepareRound();
 		}
 
-		Player player;
-		if (currentPlayer == 1) {
-			player = player1;
-		} else {
-			player = player2;
-		}
+		Player player = getCurrentPlayer();
 
 		// Check if a debugging/statistics command was given
 		switch (actionsInput.getCommand()) {
@@ -70,19 +65,26 @@ public class Game {
 		}
 
 		// Check if a normal game command was given
+		ObjectNode result;
 		switch (actionsInput.getCommand()) {
 			case Constants.PLACE_CARD:
 				if (actionsInput.getHandIdx() < player.getCardsInHand().size()) {
-					ObjectNode result = GameCommands.placeCard(player, player.getCardsInHand().get(actionsInput.getHandIdx()), actionsInput.getHandIdx());
+					result = GameCommands.placeCard(player, player.getCardsInHand().get(actionsInput.getHandIdx()), actionsInput.getHandIdx(), gameTable);
 					if (!result.isEmpty()) {
 						gameOutput.add(result);
 					}
 				}
 				return;
 			case Constants.CARD_USES_ATTACK:
-				ObjectNode result = setUpMinionAttack(actionsInput);
+				result = setUpMinionAttack(actionsInput);
 				if (!result.isEmpty()) {
-					gameOutput.add(setUpMinionAttack(actionsInput));
+					gameOutput.add(result);
+				}
+				return;
+			case Constants.CARD_USES_SPECIAL_ABILITY:
+				result = setUpMinionSpecial(actionsInput);
+				if (!result.isEmpty()) {
+					gameOutput.add(result);
 				}
 				return;
 		}
@@ -93,8 +95,6 @@ public class Game {
 			manaRound++;
 		}
 
-		playerOneMovesCurrentRound = 0;
-		playerTwoMovesCurrentRound = 0;
 		player1.setMana(player1.getMana() + manaRound);
 		player2.setMana(player2.getMana() + manaRound);
 
@@ -109,10 +109,7 @@ public class Game {
 	}
 
 	private ObjectNode getCardAtPosition(ActionsInput actionsInput) {
-		if (currentPlayer == 1) {
-			return player1.getMinionOnRow(actionsInput.getX(), actionsInput.getY());
-		}
-		return player2.getMinionOnRow(actionsInput.getX(), actionsInput.getY());
+		return gameTable.getMinionOnPosition(actionsInput.getX(), actionsInput.getY());
 	}
 
 	/**
@@ -121,11 +118,11 @@ public class Game {
 	private void endPlayerTurn() {
 		if (currentPlayer == 1) {
 			player1.setDone(true);
-			player1.resetMinionStats();
+			gameTable.resetMinionStats(1, 0);
 			currentPlayer = 2;
 		} else {
 			player2.setDone(true);
-			player2.resetMinionStats();
+			gameTable.resetMinionStats(2, 3);
 			currentPlayer = 1;
 		}
 
@@ -133,8 +130,6 @@ public class Game {
 			isRoundStart = true;
 			player1.setDone(false);
 			player2.setDone(false);
-			playerOneMovesCurrentRound = 0;
-			playerTwoMovesCurrentRound = 0;
 		}
 	}
 
@@ -175,11 +170,11 @@ public class Game {
 		ObjectNode result = mapper.createObjectNode();
 		result.put("command", Constants.GET_CARDS_ON_TABLE);
 
-		ArrayNode firstPlayerFront = player1.getFrontRowAsArrayNode();
-		ArrayNode firstPlayerBack = player1.getBackRowAsArrayNode();
+		ArrayNode firstPlayerFront = gameTable.getRowAsArrayNode(1);
+		ArrayNode firstPlayerBack = gameTable.getRowAsArrayNode(0);
 
-		ArrayNode secondPlayerFront = player2.getFrontRowAsArrayNode();
-		ArrayNode secondPlayerBack = player2.getBackRowAsArrayNode();
+		ArrayNode secondPlayerFront = gameTable.getRowAsArrayNode(2);
+		ArrayNode secondPlayerBack = gameTable.getRowAsArrayNode(3);
 
 		ArrayNode combinedCards = mapper.createArrayNode();
 
@@ -189,25 +184,29 @@ public class Game {
 		combinedCards.add(firstPlayerBack);
 
 		result.set("output", combinedCards);
-		return  result;
+		return result;
 	}
 
 	private ObjectNode setUpMinionAttack(ActionsInput actionsInput) {
-		Player attackerPlayer;
-		Player attackedPlayer;
-		if (currentPlayer == 1) {
-			attackerPlayer = player1;
-			attackedPlayer = player2;
-		} else {
-			attackerPlayer = player2;
-			attackedPlayer = player1;
-		}
+		Player attackerPlayer = getCurrentPlayer();
+		Player attackedPlayer = getNextPlayer();
 
 		int x_attacker = actionsInput.getCardAttacker().getX();
 		int y_attacker = actionsInput.getCardAttacker().getY();
 		int x_attacked = actionsInput.getCardAttacked().getX();
 		int y_attacked = actionsInput.getCardAttacked().getY();
-		return GameCommands.attackMinion(attackerPlayer, attackedPlayer, x_attacker, y_attacker, x_attacked, y_attacked);
+		return GameCommands.attackMinion(attackerPlayer, attackedPlayer, x_attacker, y_attacker, x_attacked, y_attacked, gameTable);
+	}
+
+	private ObjectNode setUpMinionSpecial(ActionsInput actionsInput) {
+		Player attackerPlayer = getCurrentPlayer();
+		Player attackedPlayer = getNextPlayer();
+
+		int x_attacker = actionsInput.getCardAttacker().getX();
+		int y_attacker = actionsInput.getCardAttacker().getY();
+		int x_attacked = actionsInput.getCardAttacked().getX();
+		int y_attacked = actionsInput.getCardAttacked().getY();
+		return GameCommands.specialAbilityMinion(attackerPlayer, attackedPlayer, x_attacker, y_attacker, x_attacked, y_attacked, gameTable);
 	}
 
 	private ObjectNode getPlayerHero(ActionsInput actionsInput) {
@@ -242,5 +241,19 @@ public class Game {
 		node.put("output", currentPlayer);
 
 		return node;
+	}
+
+	private Player getCurrentPlayer() {
+		if (currentPlayer == 1) {
+			return player1;
+		}
+		return player2;
+	}
+
+	private Player getNextPlayer() {
+		if (currentPlayer == 1) {
+			return player2;
+		}
+		return player1;
 	}
 }
