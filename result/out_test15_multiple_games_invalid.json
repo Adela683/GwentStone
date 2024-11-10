@@ -296,6 +296,15 @@
   "playerIdx" : 2,
   "output" : [ ]
 }, {
+  "command" : "getTotalGamesPlayed",
+  "output" : 1
+}, {
+  "command" : "getPlayerTwoWins",
+  "output" : 0
+}, {
+  "command" : "getPlayerOneWins",
+  "output" : 1
+}, {
   "command" : "getPlayerMana",
   "playerIdx" : 1,
   "output" : 0
@@ -791,4 +800,13 @@
   "command" : "getCardsInHand",
   "playerIdx" : 1,
   "output" : [ ]
+}, {
+  "command" : "getTotalGamesPlayed",
+  "output" : 2
+}, {
+  "command" : "getPlayerTwoWins",
+  "output" : 1
+}, {
+  "command" : "getPlayerOneWins",
+  "output" : 1
 } ]

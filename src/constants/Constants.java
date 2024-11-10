@@ -31,5 +31,8 @@ public class Constants {
 	public static final String HERO_ALREADY_ATTACKED = "Hero has already attacked this turn.";
 	public static final String SELECTED_ROW_SAME_PLAYER = "Selected row does not belong to the enemy.";
 	public static final String SELECTED_ROW_ENEMY_PLAYER = "Selected row does not belong to the current player.";
+	public static final String GET_TOTAL_GAMES_PLAYED = "getTotalGamesPlayed";
+	public static final String GET_PLAYER_ONE_WINS = "getPlayerOneWins";
+	public static final String GET_PLAYER_TWO_WINS = "getPlayerTwoWins";
 
 }

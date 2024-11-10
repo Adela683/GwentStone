@@ -41,6 +41,24 @@ public class Player {
 		this.playerId = playerId;
 	}
 
+	public ObjectNode getGamesPlayedAsObjectNode() {
+		ObjectNode gamesNode = mapper.createObjectNode();
+		gamesNode.put("command", Constants.GET_TOTAL_GAMES_PLAYED);
+		gamesNode.put("output", gamesPlayed);
+		return gamesNode;
+	}
+
+	public ObjectNode getGamesWonAsObjectNode() {
+		ObjectNode gamesNode = mapper.createObjectNode();
+		if (playerId == 1) {
+			gamesNode.put("command", Constants.GET_PLAYER_ONE_WINS);
+		} else {
+			gamesNode.put("command", Constants.GET_PLAYER_TWO_WINS);
+		}
+		gamesNode.put("output", gamesWon);
+		return gamesNode;
+	}
+
 	public ObjectNode getDeckAsObjectNode(int playerIndex) {
 		ObjectNode deckNode = mapper.createObjectNode();
 		deckNode.put("command", Constants.GET_PLAYER_DECK);

@@ -65,6 +65,15 @@ public class Game {
 			case Constants.GET_FROZEN_CARDS:
 				gameOutput.add(getFrozenCardsOnTable());
 				return;
+			case Constants.GET_PLAYER_ONE_WINS:
+				gameOutput.add(player1.getGamesWonAsObjectNode());
+				return;
+			case Constants.GET_PLAYER_TWO_WINS:
+				gameOutput.add(player2.getGamesWonAsObjectNode());
+				return;
+			case Constants.GET_TOTAL_GAMES_PLAYED:
+				gameOutput.add(player1.getGamesPlayedAsObjectNode());
+				return;
 		}
 
 		// normal commands are not allowed after a hero died
