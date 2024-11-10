@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import constants.Constants;
+import hero.Hero;
 import lombok.Getter;
 import lombok.Setter;
 import minion.Minion;
@@ -199,6 +200,147 @@ public abstract class GameCommands {
 		if (minionAttacker.getHealth() <= 0) {
 			minionAttackerRow[y_attacker] = null;
 			moveCardsLeft(minionAttackerRow, y_attacker);
+		}
+
+		return result.removeAll();
+	}
+
+	/**
+	 * Attack another player's hero. Before attacking, check all conditions:
+	 * 1. Attacker is not frozen
+	 * 2. Attacker has not attacked before in this round
+	 * 3. If enemy has a tank, the tank must be attacked first.
+	 * If hero dies, end round and increase game count and wins for winner
+	 *
+	 * @param attackerPlayer attacks a minion
+	 * @param attackedPlayer gets attacked
+	 * @param x_attacker     row of attacker
+	 * @param y_attacker     column of attacker
+	 * @param gameTable      access the game table
+	 * @return in case of error, error details, otherwise an empty ObjectNode
+	 */
+	public static ObjectNode attackHero(Player attackerPlayer, Player attackedPlayer,
+										int x_attacker, int y_attacker,
+										GameTable gameTable) {
+		ObjectNode result = mapper.createObjectNode();
+		result.put("command", Constants.ATTACK_HERO);
+
+		ObjectNode cardAttacker = mapper.createObjectNode();
+		cardAttacker.put("x", x_attacker);
+		cardAttacker.put("y", y_attacker);
+		result.set("cardAttacker", cardAttacker);
+
+
+		Minion[] minionAttackerRow = gameTable.getGameTable()[3 - x_attacker];
+		Minion minionAttacker = minionAttackerRow[y_attacker];
+		Hero attackedHero = attackedPlayer.getHero();
+
+		if (minionAttacker == null) {
+			return result.removeAll();
+		}
+
+		if (minionAttacker.isFrozen()) {
+			result.put("error", Constants.CARD_IS_FROZEN);
+			return result;
+		}
+
+		if (minionAttacker.isHasAttacked()) {
+			result.put("error", Constants.CARD_HAS_ATTACKED_ERROR);
+			return result;
+		}
+
+		if (checkEnemyTank(gameTable.getFrontRow(attackedPlayer))) {
+			result.put("error", Constants.ENEMY_HAS_TANK);
+			return result;
+		}
+
+		attackedHero.setHealth(attackedHero.getHealth() - minionAttacker.getAttackDamage());
+		minionAttacker.setHasAttacked(true);
+
+		// if hero died, end game
+		if (attackedHero.getHealth() <= 0) {
+			result.removeAll();
+			attackerPlayer.setGamesWon(attackerPlayer.getGamesWon() + 1);
+			attackerPlayer.setGamesPlayed(attackerPlayer.getGamesPlayed() + 1);
+			attackedPlayer.setGamesPlayed(attackedPlayer.getGamesPlayed() + 1);
+			if (attackerPlayer.getPlayerId() == 1) {
+				result.put("gameEnded", Constants.PLAYER_ONE_KILLED_ENEMY_HERO);
+				return result;
+			}
+
+			result.put("gameEnded", Constants.PLAYER_TWO_KILLED_ENEMY_HERO);
+			return result;
+		}
+
+		return result.removeAll();
+	}
+
+	/**
+	 * Use a hero's special ability. Before attacking, check all conditions:
+	 * 1. Player has enough mana to use ability
+	 * 2. Hero has not attacked before in this round
+	 * 3. If hero is Lord Royce/Empress Thorina, check if row belongs to the enemy
+	 * 4. If hero is General Kocioraw/King Mudface, check if row belongs to the same player
+	 * If a minion dies, take it out from the table.
+	 *
+	 * @param attackerPlayer attacks a minion
+	 * @param attackedPlayer gets attacked
+	 * @param x_attacker     to check if rows are on the same side (use the attacker's front or back row)
+	 * @param x_attacked     row attacked
+	 * @param gameTable      access the game table
+	 * @return in case of error, error details, otherwise an empty ObjectNode
+	 */
+	public static ObjectNode useHeroAbility(Player attackerPlayer, Player attackedPlayer, int x_attacker,
+											int x_attacked, GameTable gameTable) {
+		ObjectNode result = mapper.createObjectNode();
+		result.put("command", Constants.USE_HERO_ABILITY);
+
+		Hero attackerHero = attackerPlayer.getHero();
+		Minion[] attackedRow = gameTable.getGameTable()[3 - x_attacked];
+
+		if (attackerHero.getMana() > attackerPlayer.getMana()) {
+			result.put("error", Constants.NOT_ENOUGH_MANA_HERO);
+			result.put("affectedRow", x_attacked);
+			return result;
+		}
+
+		if (attackerHero.isHasAttacked()) {
+			result.put("error", Constants.HERO_ALREADY_ATTACKED);
+			result.put("affectedRow", x_attacked);
+			return result;
+		}
+
+		// check if row belongs to attacker player
+		boolean sameSide = isSameSide(x_attacker, x_attacked);
+		String heroName = attackerHero.getName();
+
+		if (sameSide && (heroName.equals("Lord Royce") || heroName.equals("Empress Thorina"))) {
+			result.put("error", Constants.SELECTED_ROW_SAME_PLAYER);
+			result.put("affectedRow", x_attacked);
+			return result;
+		}
+
+		if (!sameSide && (heroName.equals("General Kocioraw") || heroName.equals("King Mudface"))) {
+			result.put("error", Constants.SELECTED_ROW_ENEMY_PLAYER);
+			result.put("affectedRow", x_attacked);
+			return result;
+		}
+
+		attackerHero.specialAbilityHero(attackedRow);
+		attackerPlayer.setMana(attackerPlayer.getMana() - attackerHero.getMana());
+		attackerHero.setHasAttacked(true);
+
+		// remove killed minion
+		if (heroName.equals("Empress Thorina")) {
+			int index = -1;
+			for (int i = 0; i < attackedRow.length; i++) {
+				if (attackedRow[i] != null && attackedRow[i].getHealth() == -1) {
+					index = i;
+					break;
+				}
+			}
+			attackedRow[index] = null;
+			moveCardsLeft(attackedRow, index);
 		}
 
 		return result.removeAll();

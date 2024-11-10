@@ -9,8 +9,16 @@ public class LordRoyce extends Hero {
 		super(mana, health, description, colors, name, hasAttacked);
 	}
 
+	/**
+	 * Sub-Zero ability freezes all minions on the row
+	 * @param targetRow affected row
+	 */
 	@Override
 	public void specialAbilityHero(Minion[] targetRow) {
-
+		for (Minion minion : targetRow) {
+			if (minion != null) {
+				minion.setFrozen(true);
+			}
+		}
 	}
 }

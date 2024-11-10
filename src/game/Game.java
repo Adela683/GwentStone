@@ -62,6 +62,14 @@ public class Game {
 			case Constants.GET_CARD_AT_POSITION:
 				gameOutput.add(getCardAtPosition(actionsInput));
 				return;
+			case Constants.GET_FROZEN_CARDS:
+				gameOutput.add(getFrozenCardsOnTable());
+				return;
+		}
+
+		// normal commands are not allowed after a hero died
+		if (player1.getHero().getHealth() <= 0 || player2.getHero().getHealth() <= 0) {
+			return;
 		}
 
 		// Check if a normal game command was given
@@ -87,6 +95,17 @@ public class Game {
 					gameOutput.add(result);
 				}
 				return;
+			case Constants.ATTACK_HERO:
+				result = setUpAttackOnHero(actionsInput);
+				if (!result.isEmpty()) {
+					gameOutput.add(result);
+				}
+				return;
+			case Constants.USE_HERO_ABILITY:
+				result = setUpHeroAbility(actionsInput);
+				if (!result.isEmpty()) {
+					gameOutput.add(result);
+				}
 		}
 	}
 
@@ -119,10 +138,12 @@ public class Game {
 		if (currentPlayer == 1) {
 			player1.setDone(true);
 			gameTable.resetMinionStats(1, 0);
+			player1.getHero().setHasAttacked(false);
 			currentPlayer = 2;
 		} else {
 			player2.setDone(true);
 			gameTable.resetMinionStats(2, 3);
+			player2.getHero().setHasAttacked(false);
 			currentPlayer = 1;
 		}
 
@@ -187,6 +208,16 @@ public class Game {
 		return result;
 	}
 
+	private ObjectNode getFrozenCardsOnTable() {
+		ObjectNode result = mapper.createObjectNode();
+		result.put("command", Constants.GET_FROZEN_CARDS);
+
+		ArrayNode frozenCards = gameTable.getFrozenMinionsAsArrayNode();
+
+		result.set("output", frozenCards);
+		return result;
+	}
+
 	private ObjectNode setUpMinionAttack(ActionsInput actionsInput) {
 		Player attackerPlayer = getCurrentPlayer();
 		Player attackedPlayer = getNextPlayer();
@@ -196,6 +227,28 @@ public class Game {
 		int x_attacked = actionsInput.getCardAttacked().getX();
 		int y_attacked = actionsInput.getCardAttacked().getY();
 		return GameCommands.attackMinion(attackerPlayer, attackedPlayer, x_attacker, y_attacker, x_attacked, y_attacked, gameTable);
+	}
+
+	private ObjectNode setUpAttackOnHero(ActionsInput actionsInput) {
+		Player attackerPlayer = getCurrentPlayer();
+		Player attackedPlayer = getNextPlayer();
+
+		int x_attacker = actionsInput.getCardAttacker().getX();
+		int y_attacker = actionsInput.getCardAttacker().getY();
+		return GameCommands.attackHero(attackerPlayer, attackedPlayer, x_attacker, y_attacker, gameTable);
+	}
+
+	private ObjectNode setUpHeroAbility(ActionsInput actionsInput) {
+		Player attackerPlayer = getCurrentPlayer();
+		Player attackedPlayer = getNextPlayer();
+
+		int x_attacked = actionsInput.getAffectedRow();
+		int x_attacker = 0;
+		if (attackerPlayer.getPlayerId() == 1) {
+			x_attacker = 3;
+		}
+
+		return GameCommands.useHeroAbility(attackerPlayer, attackedPlayer, x_attacker, x_attacked, gameTable);
 	}
 
 	private ObjectNode setUpMinionSpecial(ActionsInput actionsInput) {

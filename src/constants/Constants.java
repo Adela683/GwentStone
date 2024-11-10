@@ -22,4 +22,14 @@ public class Constants {
 	public static final String NO_CARD_AT_POSITION = "No card available at that position.";
 	public static final String CARD_USES_SPECIAL_ABILITY = "cardUsesAbility";
 	public static final String CARD_NOT_ON_SAME_SIDE_ERROR = "Attacked card does not belong to the current player.";
+	public static final String ATTACK_HERO = "useAttackHero";
+	public static final String PLAYER_ONE_KILLED_ENEMY_HERO = "Player one killed the enemy hero.";
+	public static final String PLAYER_TWO_KILLED_ENEMY_HERO = "Player two killed the enemy hero.";
+	public static final String GET_FROZEN_CARDS = "getFrozenCardsOnTable";
+	public static final String USE_HERO_ABILITY = "useHeroAbility";
+	public static final String NOT_ENOUGH_MANA_HERO = "Not enough mana to use hero's ability.";
+	public static final String HERO_ALREADY_ATTACKED = "Hero has already attacked this turn.";
+	public static final String SELECTED_ROW_SAME_PLAYER = "Selected row does not belong to the enemy.";
+	public static final String SELECTED_ROW_ENEMY_PLAYER = "Selected row does not belong to the current player.";
+
 }

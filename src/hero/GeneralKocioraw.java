@@ -10,8 +10,16 @@ public class GeneralKocioraw extends Hero {
 		super(mana, health, description, colors, name, hasAttacked);
 	}
 
+	/**
+	 * Blood Thirst ability increases attack damage by 1
+	 * @param targetRow affected row
+	 */
 	@Override
 	public void specialAbilityHero(Minion[] targetRow) {
-
+		for (Minion minion : targetRow) {
+			if (minion != null) {
+				minion.setAttackDamage(minion.getAttackDamage() + 1);
+			}
+		}
 	}
 }

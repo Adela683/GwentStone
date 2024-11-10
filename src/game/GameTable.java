@@ -51,6 +51,21 @@ public class GameTable {
 		return node;
 	}
 
+	public ArrayNode getFrozenMinionsAsArrayNode() {
+		ArrayNode node = mapper.createArrayNode();
+
+		for (int i = gameTable.length - 1; i >= 0; i--) {
+			for (int j = 0; j < gameTable[0].length; j++) {
+				if (gameTable[i][j] != null && gameTable[i][j].isFrozen()) {
+					ObjectNode minionObject = gameTable[i][j].getMinionAsObjectNode();
+					node.add(minionObject);
+				}
+			}
+		}
+
+		return node;
+	}
+
 	public void resetMinionStats(int frontRow, int backRow) {
 		for (Minion minion : gameTable[frontRow]){
 			if (minion != null) {
