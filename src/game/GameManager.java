@@ -2,7 +2,6 @@ package game;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import fileio.ActionsInput;
 import fileio.CardInput;
 import fileio.GameInput;
@@ -10,7 +9,6 @@ import fileio.StartGameInput;
 import hero.HeroFactory;
 import lombok.Getter;
 import minion.Minion;
-import minion.MinionFactory;
 import player.Player;
 
 import java.util.ArrayList;
@@ -19,66 +17,75 @@ import java.util.Random;
 import java.util.Stack;
 
 public class GameManager {
-	private Player player1;
-	private Player player2;
-	private ArrayList<GameInput> games;
-	@Getter
-	private ArrayNode output;
+    private final Player player1;
+    private final Player player2;
+    private final ArrayList<GameInput> games;
+    @Getter
+    private final ArrayNode output;
 
-	public GameManager(Player player1, Player player2, ArrayList<GameInput> games, ArrayNode output) {
-		this.player1 = player1;
-		this.player2 = player2;
-		this.games = games;
-		this.output = output;
-	}
+    public GameManager(final Player player1, final Player player2,
+                       final ArrayList<GameInput> games, final ArrayNode output) {
+        this.player1 = player1;
+        this.player2 = player2;
+        this.games = games;
+        this.output = output;
+    }
 
-	public void play() {
-		for (GameInput game : games) {
-			StartGameInput startInput = game.getStartGame();
-			ArrayList<ActionsInput> gameActions = game.getActions();
+    /**
+     * Run all games in the input file.
+     */
+    public void play() {
+        for (GameInput game : games) {
+            StartGameInput startInput = game.getStartGame();
+            ArrayList<ActionsInput> gameActions = game.getActions();
 
-			initPlayer(player1, startInput.getShuffleSeed(), startInput.getPlayerOneDeckIdx(), startInput.getPlayerOneHero());
-			initPlayer(player2, startInput.getShuffleSeed(), startInput.getPlayerTwoDeckIdx(), startInput.getPlayerTwoHero());
+            initPlayer(player1, startInput.getShuffleSeed(), startInput.getPlayerOneDeckIdx(),
+                    startInput.getPlayerOneHero());
+            initPlayer(player2, startInput.getShuffleSeed(), startInput.getPlayerTwoDeckIdx(),
+                    startInput.getPlayerTwoHero());
 
-			// Start a new game
-			Game currentGame = new Game(player1, player2, startInput.getStartingPlayer());
+            // Start a new game
+            Game currentGame = new Game(player1, player2, startInput.getStartingPlayer());
 
-			for (ActionsInput action : gameActions) {
-				currentGame.executeCommand(action);
-			}
-			for (JsonNode node : currentGame.getGameOutput()) {
-				output.add(node);
-			}
-		}
-	}
+            // Execute all actions for the current game.
+            for (ActionsInput action : gameActions) {
+                currentGame.executeCommand(action);
+            }
 
-	/**
-	 * Prepares a player to play a game.
-	 *
-	 * @param player to prepare for game
-	 */
-	private void initPlayer(Player player, long shuffleSeed, int currentDeckIndex, CardInput hero) {
-		player.setCardsInHand(new ArrayList<>());
-		player.setDone(false);
-		player.setMana(0);
-		player.setCurrentDeckIndex(currentDeckIndex);
+            // Put game result in the output node.
+            for (JsonNode node : currentGame.getGameOutput()) {
+                output.add(node);
+            }
+        }
+    }
 
-		Stack<Minion> playerPacket = new Stack<>();
-		Random random = new Random(shuffleSeed);
+    /**
+     * Prepares a player to play a game.
+     * @param player to prepare for game
+     */
+    private void initPlayer(final Player player, final long shuffleSeed,
+                            final int currentDeckIndex, final CardInput hero) {
+        player.setCardsInHand(new ArrayList<>());
+        player.setDone(false);
+        player.setMana(0);
+        player.setCurrentDeckIndex(currentDeckIndex);
 
-		// make a deep copy of the current deck, so we can keep the original
-		ArrayList<Minion> deckPacketCopy = new ArrayList<>();
-		for (Minion minion : player.getDeck().get(currentDeckIndex)) {
-			Minion newMinion = minion.copy();
-			deckPacketCopy.add(newMinion);
-		}
+        Stack<Minion> playerPacket = new Stack<>();
+        Random random = new Random(shuffleSeed);
 
-		Collections.shuffle(deckPacketCopy, random);
-		for (int i = player1.getCardsInDeck() - 1; i >= 0; i--) {
-			playerPacket.push(deckPacketCopy.get(i));
-		}
+        // Make a deep copy of the current packet, so we can keep the deck in the original form.
+        ArrayList<Minion> deckPacketCopy = new ArrayList<>();
+        for (Minion minion : player.getDeck().get(currentDeckIndex)) {
+            Minion newMinion = minion.copy();
+            deckPacketCopy.add(newMinion);
+        }
 
-		player.setCurrentCardPacket(playerPacket);
-		player.setHero(HeroFactory.createHeroFromCardInput(hero, hero.getName()));
-	}
+        Collections.shuffle(deckPacketCopy, random);
+        for (int i = player1.getCardsInDeck() - 1; i >= 0; i--) {
+            playerPacket.push(deckPacketCopy.get(i));
+        }
+
+        player.setCurrentCardPacket(playerPacket);
+        player.setHero(HeroFactory.createHeroFromCardInput(hero));
+    }
 }

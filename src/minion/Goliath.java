@@ -2,33 +2,30 @@ package minion;
 
 import java.util.ArrayList;
 
-public class Goliath extends Minion {
-	public Goliath(int mana, int health, String description, ArrayList<String> colors, String name, boolean hasAttacked, int attackDamage) {
-		super(mana, health, description, colors, name, hasAttacked, attackDamage);
-	}
+public final class Goliath extends Minion {
+    public Goliath(final int mana, final int health, final String description,
+                   final ArrayList<String> colors, final String name,
+                   final boolean hasAttacked, final int attackDamage) {
+        super(mana, health, description, colors, name, hasAttacked, attackDamage);
+    }
 
-	private Goliath(Goliath minion) {
-		super(minion.getMana(), minion.getHealth(), minion.getDescription(), minion.getColors(),
-				minion.getName(), minion.isHasAttacked(), minion.getAttackDamage());
-	}
+    private Goliath(final Goliath minion) {
+        super(minion.getMana(), minion.getHealth(), minion.getDescription(), minion.getColors(),
+                minion.getName(), minion.isHasAttacked(), minion.getAttackDamage());
+    }
 
-	@Override
-	public Minion copy() {
-		return new Goliath(this);
-	}
+    @Override
+    public Minion copy() {
+        return new Goliath(this);
+    }
 
-	@Override
-	public boolean isAllowedFront() {
-		return true;
-	}
+    @Override
+    public boolean isAllowedFront() {
+        return true;
+    }
 
-	@Override
-	public boolean isAllowedBack() {
-		return false;
-	}
-
-	@Override
-	public boolean isTank() {
-		return true;
-	}
+    @Override
+    public boolean isTank() {
+        return true;
+    }
 }

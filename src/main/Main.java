@@ -1,12 +1,10 @@
 package main;
 
-import card.Card;
 import checker.Checker;
-
+import checker.CheckerConstants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import checker.CheckerConstants;
 import fileio.CardInput;
 import fileio.Input;
 import game.GameManager;
@@ -76,53 +74,39 @@ public final class Main {
 
         ArrayNode output = objectMapper.createArrayNode();
 
-        /*
-         * TODO Implement your function here
-         *
-         * How to add output to the output array?
-         * There are multiple ways to do this, here is one example:
-         *
-         * ObjectMapper mapper = new ObjectMapper();
-         *
-         * ObjectNode objectNode = mapper.createObjectNode();
-         * objectNode.put("field_name", "field_value");
-         *
-         * ArrayNode arrayNode = mapper.createArrayNode();
-         * arrayNode.add(objectNode);
-         *
-         * output.add(arrayNode);
-         * output.add(objectNode);
-         *
-         */
+        ArrayList<ArrayList<Minion>> playerOneDecks =
+                getPlayerDecksAsMinions(inputData.getPlayerOneDecks().getDecks());
+        ArrayList<ArrayList<Minion>> playerTwoDecks =
+                getPlayerDecksAsMinions(inputData.getPlayerTwoDecks().getDecks());
 
-        // TODO methods for this
-        ArrayList<ArrayList<Minion>> playerOneDecks = new ArrayList<>();
-        ArrayList<ArrayList<Minion>> playerTwoDecks = new ArrayList<>();
-        for (ArrayList<CardInput> cardInputs : inputData.getPlayerOneDecks().getDecks()) {
-            ArrayList<Minion> cards = new ArrayList<>();
-            for (CardInput cardInput : cardInputs) {
-                Minion minion = MinionFactory.createMinionFromCardInput(cardInput, cardInput.getName());
-                cards.add(minion);
-            }
-            playerOneDecks.add(cards);
-        }
+        Player player1 = new Player(playerOneDecks,
+                inputData.getPlayerOneDecks().getNrCardsInDeck(),
+                inputData.getPlayerOneDecks().getNrCardsInDeck(),
+                1);
 
-        for (ArrayList<CardInput> cardInputs : inputData.getPlayerTwoDecks().getDecks()) {
-            ArrayList<Minion> cards = new ArrayList<>();
-            for (CardInput cardInput : cardInputs) {
-                Minion minion = MinionFactory.createMinionFromCardInput(cardInput, cardInput.getName());
-                cards.add(minion);
-            }
-            playerTwoDecks.add(cards);
-        }
-
-        Player player1 = new Player(playerOneDecks, inputData.getPlayerOneDecks().getNrCardsInDeck(), inputData.getPlayerOneDecks().getNrCardsInDeck(), 1);
-        Player player2 = new Player(playerTwoDecks, inputData.getPlayerTwoDecks().getNrCardsInDeck(), inputData.getPlayerTwoDecks().getNrCardsInDeck(), 2);
+        Player player2 = new Player(playerTwoDecks,
+                inputData.getPlayerTwoDecks().getNrCardsInDeck(),
+                inputData.getPlayerTwoDecks().getNrCardsInDeck(),
+                2);
 
         GameManager gameManager = new GameManager(player1, player2, inputData.getGames(), output);
         gameManager.play();
 
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
         objectWriter.writeValue(new File(filePath2), output);
+    }
+
+    private static ArrayList<ArrayList<Minion>>
+    getPlayerDecksAsMinions(final ArrayList<ArrayList<CardInput>> playerDeck) {
+        ArrayList<ArrayList<Minion>> deck = new ArrayList<>();
+        for (ArrayList<CardInput> cardInputs : playerDeck) {
+            ArrayList<Minion> cards = new ArrayList<>();
+            for (CardInput cardInput : cardInputs) {
+                Minion minion = MinionFactory.createMinionFromCardInput(cardInput);
+                cards.add(minion);
+            }
+            deck.add(cards);
+        }
+        return deck;
     }
 }

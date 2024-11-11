@@ -3,35 +3,28 @@ package card;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
-import minion.Minion;
 
 import java.util.ArrayList;
 
 @Setter
 @Getter
 public abstract class Card {
-	private int mana;
-	private int health;
-	private String description;
-	private ArrayList<String> colors;
-	private String name;
-	private boolean hasAttacked;
-	private ObjectMapper mapper = new ObjectMapper();
+    private int mana;
+    private int health;
+    private String description;
+    private ArrayList<String> colors;
+    private String name;
+    private boolean hasAttacked;
+    private ObjectMapper mapper = new ObjectMapper();
 
-	public Card(int mana, int health, String description, ArrayList<String> colors, String name, boolean hasAttacked) {
-		this.mana = mana;
-		this.health = health;
-		this.description = description;
-		this.colors = colors;
-		this.name = name;
-		this.hasAttacked = hasAttacked;
-	}
-
-	public void specialAbilityMinion(Minion target) {
-
-	}
-
-	public void specialAbilityHero(Minion[] targetRow) {
-
-	}
+    public Card(final int mana, final int health, final String description,
+                final ArrayList<String> colors, final String name,
+                final boolean hasAttacked) {
+        this.mana = mana;
+        this.health = health;
+        this.description = description;
+        this.colors = colors;
+        this.name = name;
+        this.hasAttacked = hasAttacked;
+    }
 }
