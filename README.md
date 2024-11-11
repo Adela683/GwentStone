@@ -31,5 +31,5 @@ start si end pentru runde. Se parseaza comenzile si se apeleaza metoda care le r
 unui meci si se adauga la output-ul final.
 - `GameCommands`: comenzile de aici seamana destul de mult: pentru atac/abilitati speciale, se verifica daca se poate face miscarea respectiva,
 si daca nu se poate se trimite un mesaj de eroare, altfel un node gol. Important aici este ca o coordonata din joc (1, 1) va fi in realitate (2, 1) 
-- deci va trebui sa modificam x. Se face mereu 3 - x ca sa obtinem coordonata corecta.
+deci va trebui sa modificam x. Se face mereu 3 - x ca sa obtinem coordonata corecta.
 
