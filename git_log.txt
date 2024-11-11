@@ -1,0 +1,47 @@
+commit 88ca7d7f54d130118fbd482f89da52faa1add7c3
+Author: Adela683 <talevici_adela@yahoo.com>
+Date:   Mon Nov 11 18:26:42 2024 +0200
+
+    Added README
+
+commit 19763bddda8fcd6cf8e1a31cd74a7b907960dd14
+Author: Adela683 <talevici_adela@yahoo.com>
+Date:   Mon Nov 11 17:02:40 2024 +0200
+
+    Fixed coding style
+
+commit 36fc33191685b4fc45c40bb3617ba7cc5b1e025e
+Author: Adela683 <talevici_adela@yahoo.com>
+Date:   Sun Nov 10 14:17:02 2024 +0200
+
+    Implemented statistics commands. TODO: fix coding style
+
+commit bdbc89f7a72db8775bbd473cb1b86f9568a91637
+Author: Adela683 <talevici_adela@yahoo.com>
+Date:   Sun Nov 10 13:48:17 2024 +0200
+
+    Implemented attack on heroes and heroes special abilities
+
+commit ee580194b0936ad53deb81097de297b0a37b2f94
+Author: Adela683 <talevici_adela@yahoo.com>
+Date:   Sat Nov 9 20:44:44 2024 +0200
+
+    Refactored table to now use one matrix instead of multiple arrays per player. Added special ability feature for minions
+
+commit 298f3e2ae73ab7e5055757b9ff667b75fdad28b9
+Author: Adela683 <talevici_adela@yahoo.com>
+Date:   Sat Nov 9 17:01:57 2024 +0200
+
+    Added attack feature for minions
+
+commit 65711da92d0ed82a171dacc112e1657d3424bfce
+Author: Adela683 <talevici_adela@yahoo.com>
+Date:   Sat Nov 9 12:09:37 2024 +0200
+
+    Implemented debugging commands and fixed turn based mechanic
+
+commit 0d65eb9bf0f4e54ff860d4597846bffc9a6d7b9f
+Author: Adela683 <talevici_adela@yahoo.com>
+Date:   Fri Nov 8 17:25:33 2024 +0200
+
+    Implemented first command: getPlayerDeck
